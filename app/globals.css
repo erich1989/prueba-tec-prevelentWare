@@ -1,0 +1,55 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Paleta Stitch / Dashboard */
+:root {
+  /* Colores Principales */
+  --color-primary: #064e3b;        /* Stitch: dark green */
+  --color-primary-light: #047857;
+  --color-primary-dark: #022c22;
+  --color-emerald-50: #ecfdf5;
+  --color-emerald-100: #d1fae5;
+  --color-emerald-800-40: rgba(6, 78, 59, 0.4);
+  
+  --color-success: #2ECC71;        /* Verde Lima Neón - Indicadores de éxito */
+  --color-success-light: #58D68D;
+  --color-success-dark: #27AE60;
+  
+  --color-accent: #00C49A;          /* Verde Menta - Botones, gráficos, elementos interactivos */
+  --color-accent-light: #4DD0E1;
+  --color-accent-dark: #009688;
+  
+  --color-pale: #E8F6F3;            /* Verde Pálido - Fondos de estado, hover activos */
+  
+  --color-error: #ef4444;           /* Rojo - Indicadores negativos/errores */
+  --color-error-light: #f87171;
+  --color-error-dark: #dc2626;
+  
+  /* Colores Neutros */
+  --color-bg-light: #f8fafc;        /* Stitch: background-light */
+  --color-bg-white: #ffffff;         /* Blanco - Cards y contenedores */
+  
+  --color-text-dark: #1f2937;       /* Gris oscuro - Texto principal */
+  --color-text-medium: #6b7280;     /* Gris medio - Texto secundario */
+  --color-text-light: #9ca3af;      /* Gris claro - Texto terciario */
+  
+  /* Escala de Grises */
+  --color-grey-50: #f9fafb;
+  --color-grey-100: #f3f4f6;
+  --color-grey-200: #e5e7eb;
+  --color-grey-300: #d1d5db;
+  --color-grey-400: #9ca3af;
+  --color-grey-500: #6b7280;
+  --color-grey-600: #4b5563;
+  --color-grey-700: #374151;
+  --color-grey-800: #1f2937;
+  --color-grey-900: #111827;
+}
+
+/* Footer links hover (Stitch) */
+a.footer-link:hover {
+  color: var(--color-primary) !important;
+}

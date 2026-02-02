@@ -1,0 +1,1 @@
+export { ReportesChart } from './ReportesChart';
