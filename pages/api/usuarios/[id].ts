@@ -54,14 +54,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     if (req.method === 'PATCH') {
-      const { nombre, correo, telefono, rol } = req.body as {
+      const { nombre, correo, telefono, rol, estado } = req.body as {
         nombre?: string;
         correo?: string;
         telefono?: string | null;
         rol?: string;
+        estado?: string;
       };
 
-      const updates: { name?: string; email?: string; phone?: string | null; role?: string } = {};
+      const updates: { name?: string; email?: string; phone?: string | null; role?: string; estado?: string } = {};
 
       if (typeof nombre === 'string') {
         updates.name = nombre.trim() || existing.email;
@@ -71,6 +72,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
       if (rol !== undefined) {
         updates.role = normalizeRole(rol);
+      }
+      if (estado === 'Activo' || estado === 'Inactivo') {
+        updates.estado = estado;
       }
       if (typeof correo === 'string' && correo.trim()) {
         const emailTrim = correo.trim();

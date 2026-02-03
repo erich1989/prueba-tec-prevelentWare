@@ -58,15 +58,11 @@ export default function ReportesPage() {
     setMesParaVistaDia,
     añoParaVistaMes,
     setAñoParaVistaMes,
-    dataIngresosPorDia,
-    dataEgresosPorDia,
-    dataIngresosPorMes,
-    dataEgresosPorMes,
-    dataIngresosPorAño,
-    dataEgresosPorAño,
-    añosVistaAño,
     loadingReporte,
+    loadingReporteMessage,
     errorReporte,
+    chartSeries,
+    chartCategoriesOverride,
     saldo,
     loadingSaldo,
     errorSaldo,
@@ -209,49 +205,15 @@ export default function ReportesPage() {
             )}
             {(vistaGrafica === 'dia' || vistaGrafica === 'mes' || vistaGrafica === 'año') && loadingReporte ? (
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 280 }}>
-                <Typography color="text.secondary">
-                  {vistaGrafica === 'dia'
-                    ? 'Cargando datos del mes...'
-                    : vistaGrafica === 'mes'
-                      ? 'Cargando datos del año...'
-                      : 'Cargando datos por año...'}
-                </Typography>
+                <Typography color="text.secondary">{loadingReporteMessage}</Typography>
               </Box>
             ) : (
               <ReportesChart
                 vista={vistaGrafica}
                 mesParaVistaDia={mesParaVistaDia}
                 añoParaVistaMes={añoParaVistaMes}
-                categoriesOverride={
-                  vistaGrafica === 'año' && añosVistaAño.length > 0
-                    ? añosVistaAño.map(String)
-                    : undefined
-                }
-                series={
-                  vistaGrafica === 'dia' &&
-                  dataIngresosPorDia.length === 31 &&
-                  dataEgresosPorDia.length === 31
-                    ? [
-                        { name: 'Ingresos', data: dataIngresosPorDia },
-                        { name: 'Gastos', data: dataEgresosPorDia },
-                      ]
-                    : vistaGrafica === 'mes' &&
-                      dataIngresosPorMes.length === 12 &&
-                      dataEgresosPorMes.length === 12
-                    ? [
-                        { name: 'Ingresos', data: dataIngresosPorMes },
-                        { name: 'Gastos', data: dataEgresosPorMes },
-                      ]
-                    : vistaGrafica === 'año' &&
-                      dataIngresosPorAño.length === añosVistaAño.length &&
-                      dataEgresosPorAño.length === añosVistaAño.length &&
-                      añosVistaAño.length > 0
-                    ? [
-                        { name: 'Ingresos', data: dataIngresosPorAño },
-                        { name: 'Gastos', data: dataEgresosPorAño },
-                      ]
-                    : undefined
-                }
+                categoriesOverride={chartCategoriesOverride}
+                series={chartSeries}
                 height={280}
               />
             )}

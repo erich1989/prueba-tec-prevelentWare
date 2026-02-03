@@ -23,6 +23,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import FilterListOffIcon from '@mui/icons-material/FilterListOff';
 import { CrearUsuarioDialog } from '../../app/components/CrearUsuarioDialog';
 import {
   pageContainerSx,
@@ -46,10 +47,12 @@ import {
   tableBodyRowSx,
   tableCellSx,
   tableCellSecondarySx,
+  emptyCellTextBoldSx,
   editButtonSx,
   deleteButtonSx,
   searchIconSx,
   getRoleChipStyles,
+  getEstadoChipStyles,
 } from '@/styles/usuarios.styles';
 import { useUsuarios } from '@/hooks/useUsuarios';
 
@@ -60,6 +63,7 @@ export default function UsuariosPage() {
     error,
     nombreCorreo,
     setNombreCorreo,
+    emptyStateMessage,
     rolFiltro,
     setRolFiltro,
     estadoFiltro,
@@ -75,6 +79,7 @@ export default function UsuariosPage() {
     handleEliminarUsuario,
     openModalEditar,
     closeDialog,
+    limpiarFiltros,
   } = useUsuarios();
 
   return (
@@ -158,8 +163,8 @@ export default function UsuariosPage() {
                 <MenuItem value="Inactivo">Inactivo</MenuItem>
               </Select>
             </FormControl>
-            <Button variant="outlined" color="primary" sx={filterButtonSx}>
-              Filtrar
+            <Button variant="outlined" color="primary" sx={filterButtonSx} aria-label="Quitar filtros" onClick={limpiarFiltros}>
+              <FilterListOffIcon />
             </Button>
           </Box>
         </CardContent>
@@ -174,20 +179,33 @@ export default function UsuariosPage() {
                 <TableCell sx={tableHeadCellSx}>Correo</TableCell>
                 <TableCell sx={tableHeadCellSx}>Teléfono</TableCell>
                 <TableCell sx={tableHeadCellSx}>Tipo de usuario</TableCell>
+                <TableCell sx={tableHeadCellSx}>Estado</TableCell>
                 <TableCell sx={tableHeadCellSx}>Acciones</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={5} sx={tableCellSecondarySx}>
+                  <TableCell colSpan={6} sx={tableCellSecondarySx}>
                     Cargando usuarios...
                   </TableCell>
                 </TableRow>
               ) : error ? (
                 <TableRow>
-                  <TableCell colSpan={5} sx={tableCellSecondarySx}>
+                  <TableCell colSpan={6} sx={tableCellSecondarySx}>
                     {error}
+                  </TableCell>
+                </TableRow>
+              ) : emptyStateMessage ? (
+                <TableRow>
+                  <TableCell colSpan={6} sx={tableCellSecondarySx}>
+                    {emptyStateMessage.prefix}
+                    {emptyStateMessage.highlight != null && (
+                      <Box component="span" sx={emptyCellTextBoldSx}>
+                        {emptyStateMessage.highlight}
+                      </Box>
+                    )}
+                    {emptyStateMessage.suffix}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -208,6 +226,14 @@ export default function UsuariosPage() {
                         size="small"
                         variant="outlined"
                         sx={getRoleChipStyles(row.rol)}
+                      />
+                    </TableCell>
+                    <TableCell sx={tableCellSecondarySx}>
+                      <Chip
+                        label={row.estado ?? 'Activo'}
+                        size="small"
+                        variant="outlined"
+                        sx={getEstadoChipStyles(row.estado ?? 'Activo')}
                       />
                     </TableCell>
                     <TableCell sx={{ px: 4, py: 2.5 }}>

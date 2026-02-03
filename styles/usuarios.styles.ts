@@ -138,6 +138,11 @@ export const tableCellSecondarySx: SxProps<Theme> = {
   color: 'grey.600',
 };
 
+/** Texto en negrilla para el mensaje de “sin resultados” (ej. texto de búsqueda). */
+export const emptyCellTextBoldSx: SxProps<Theme> = {
+  fontWeight: 'bold',
+};
+
 export const editButtonSx: SxProps<Theme> = {
   textTransform: 'none',
   fontWeight: 600,
@@ -186,6 +191,31 @@ export function getRoleChipStyles(rol: string): SxProps<Theme> {
       bgcolor: 'rgba(25, 118, 210, 0.08)',
       color: '#1565c0',
       borderColor: 'rgba(25, 118, 210, 0.4)',
+      fontWeight: 500,
+    };
+  }
+  return {
+    bgcolor: 'rgba(0, 0, 0, 0.02)',
+    color: '#616161',
+    borderColor: 'rgba(0, 0, 0, 0.12)',
+    fontWeight: 500,
+  };
+}
+
+export function getEstadoChipStyles(estado: string): SxProps<Theme> {
+  if (estado === 'Activo') {
+    return {
+      bgcolor: 'rgba(76, 175, 80, 0.08)',
+      color: '#2e7d32',
+      borderColor: 'rgba(76, 175, 80, 0.4)',
+      fontWeight: 500,
+    };
+  }
+  if (estado === 'Inactivo') {
+    return {
+      bgcolor: 'rgba(158, 158, 158, 0.12)',
+      color: '#616161',
+      borderColor: 'rgba(158, 158, 158, 0.4)',
       fontWeight: 500,
     };
   }

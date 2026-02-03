@@ -230,6 +230,57 @@ export function useReportes() {
     [mesParaVistaDia]
   );
 
+  /** Mensaje de carga del gráfico según la vista (misma convención que emptyStateMessage en useUsuarios). */
+  const loadingReporteMessage = useMemo(() => {
+    if (vistaGrafica === 'dia') return 'Cargando datos del mes...';
+    if (vistaGrafica === 'mes') return 'Cargando datos del año...';
+    return 'Cargando datos por año...';
+  }, [vistaGrafica]);
+
+  /** Series para el gráfico (ingresos + gastos); undefined si no hay datos listos. */
+  const chartSeries = useMemo((): { name: string; data: number[] }[] | undefined => {
+    if (vistaGrafica === 'dia' && dataIngresosPorDia.length === 31 && dataEgresosPorDia.length === 31) {
+      return [
+        { name: 'Ingresos', data: dataIngresosPorDia },
+        { name: 'Gastos', data: dataEgresosPorDia },
+      ];
+    }
+    if (vistaGrafica === 'mes' && dataIngresosPorMes.length === 12 && dataEgresosPorMes.length === 12) {
+      return [
+        { name: 'Ingresos', data: dataIngresosPorMes },
+        { name: 'Gastos', data: dataEgresosPorMes },
+      ];
+    }
+    if (
+      vistaGrafica === 'año' &&
+      dataIngresosPorAño.length === añosVistaAño.length &&
+      dataEgresosPorAño.length === añosVistaAño.length &&
+      añosVistaAño.length > 0
+    ) {
+      return [
+        { name: 'Ingresos', data: dataIngresosPorAño },
+        { name: 'Gastos', data: dataEgresosPorAño },
+      ];
+    }
+    return undefined;
+  }, [
+    vistaGrafica,
+    dataIngresosPorDia,
+    dataEgresosPorDia,
+    dataIngresosPorMes,
+    dataEgresosPorMes,
+    dataIngresosPorAño,
+    dataEgresosPorAño,
+    añosVistaAño,
+  ]);
+
+  /** Categorías del eje X para vista por año (null en dia/mes). */
+  const chartCategoriesOverride = useMemo(
+    (): string[] | undefined =>
+      vistaGrafica === 'año' && añosVistaAño.length > 0 ? añosVistaAño.map(String) : undefined,
+    [vistaGrafica, añosVistaAño]
+  );
+
   const limpiarFiltros = useCallback(() => {
     setTipoFiltro('');
     setUsuarioFiltro('');
@@ -258,7 +309,10 @@ export function useReportes() {
     dataEgresosPorAño,
     añosVistaAño,
     loadingReporte,
+    loadingReporteMessage,
     errorReporte,
+    chartSeries,
+    chartCategoriesOverride,
     saldo,
     loadingSaldo,
     errorSaldo,

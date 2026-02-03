@@ -20,6 +20,7 @@ import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 import PhoneOutlinedIcon from '@mui/icons-material/PhoneOutlined';
 import WorkOutlineIcon from '@mui/icons-material/WorkOutline';
+import FlagIcon from '@mui/icons-material/Flag';
 import SaveIcon from '@mui/icons-material/Save';
 import {
   backdropSx,
@@ -45,6 +46,7 @@ export interface CrearUsuarioForm {
   correo: string;
   telefono: string;
   rol: string;
+  estado: string;
 }
 
 export interface UsuarioParaEditar {
@@ -53,6 +55,7 @@ export interface UsuarioParaEditar {
   correo: string;
   telefono: string | null;
   rol: string;
+  estado: string;
 }
 
 interface CrearUsuarioDialogProps {
@@ -75,6 +78,7 @@ const initialForm: CrearUsuarioForm = {
   correo: '',
   telefono: '',
   rol: '',
+  estado: 'Activo',
 };
 
 export function CrearUsuarioDialog({ open, onClose, onSubmit, usuarioEditando, onEdit, sending = false, submitError = null }: CrearUsuarioDialogProps) {
@@ -88,6 +92,7 @@ export function CrearUsuarioDialog({ open, onClose, onSubmit, usuarioEditando, o
         correo: usuarioEditando.correo || '',
         telefono: usuarioEditando.telefono || '',
         rol: usuarioEditando.rol === 'ADMIN' ? 'Admin' : usuarioEditando.rol === 'USER' ? 'Usuario' : usuarioEditando.rol || '',
+        estado: usuarioEditando.estado === 'Activo' || usuarioEditando.estado === 'Inactivo' ? usuarioEditando.estado : 'Activo',
       });
     } else if (open && !usuarioEditando) {
       setForm(initialForm);
@@ -223,6 +228,35 @@ export function CrearUsuarioDialog({ open, onClose, onSubmit, usuarioEditando, o
                 <MenuItem value="">Seleccione un rol</MenuItem>
                 <MenuItem value="Admin">Admin</MenuItem>
                 <MenuItem value="Usuario">Usuario</MenuItem>
+              </TextField>
+            </Box>
+
+            <Box>
+              <Typography component="label" htmlFor="crear-usuario-estado" sx={labelSx}>
+                Estado
+              </Typography>
+              <TextField
+                id="crear-usuario-estado"
+                select
+                fullWidth
+                value={form.estado}
+                onChange={(e) => setForm((f) => ({ ...f, estado: e.target.value }))}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start" sx={inputAdornmentSx}>
+                      <FlagIcon sx={iconSx} />
+                    </InputAdornment>
+                  ),
+                  sx: inputPropsSx,
+                }}
+                sx={inputSx}
+                SelectProps={{
+                  displayEmpty: true,
+                  renderValue: (v: unknown) => (typeof v === 'string' ? v : '') || 'Seleccione un estado',
+                }}
+              >
+                <MenuItem value="Activo">Activo</MenuItem>
+                <MenuItem value="Inactivo">Inactivo</MenuItem>
               </TextField>
             </Box>
 
