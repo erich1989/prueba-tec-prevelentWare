@@ -40,7 +40,7 @@ import {
   getListItemIconSx,
   getListItemTextSx,
   drawerFooterSx,
-  userCardSx,
+  getUserCardSx,
   userAvatarSx,
   userInfoWrapSx,
   userNameSx,
@@ -131,7 +131,7 @@ export const Navigation = ({ children, pathname }: NavigationProps) => {
           })}
         </List>
         <Box sx={drawerFooterSx}>
-          <Box sx={userCardSx}>
+          <Box sx={getUserCardSx(open)}>
             {user?.image ? (
               <Box
                 component="img"

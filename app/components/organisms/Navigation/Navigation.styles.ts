@@ -140,9 +140,27 @@ export const userCardSx: SxProps<Theme> = {
   bgcolor: 'grey.50',
 };
 
+/** Cuando el drawer está cerrado: centrar solo el avatar y evitar que el contenedor se vea ovalado. */
+export function getUserCardSx(open: boolean): SxProps<Theme> {
+  if (open) return userCardSx;
+  return {
+    ...userCardSx,
+    justifyContent: 'center',
+    p: 1.5,
+    borderRadius: '50%',
+    width: 44,
+    height: 44,
+    minWidth: 44,
+    minHeight: 44,
+    boxSizing: 'border-box',
+  };
+}
+
 export const userAvatarSx: SxProps<Theme> = {
   width: 40,
   height: 40,
+  minWidth: 40,
+  minHeight: 40,
   borderRadius: '50%',
   bgcolor: 'primary.main',
   color: 'white',
@@ -151,6 +169,7 @@ export const userAvatarSx: SxProps<Theme> = {
   justifyContent: 'center',
   fontWeight: 700,
   fontSize: '0.875rem',
+  flexShrink: 0,
 };
 
 export const userInfoWrapSx: SxProps<Theme> = {
