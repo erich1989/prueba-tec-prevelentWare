@@ -33,6 +33,7 @@ const CANTIDAD_AÑOS_VISTA_AÑO = 6;
  * Vista por día: ?mes=YYYY-MM → ingresosPorDia, egresosPorDia (31 valores).
  * Vista por mes: ?año=YYYY → ingresosPorMes, egresosPorMes (12 valores, Ene-Dic).
  * Vista por año: ?vista=año → años, ingresosPorAño, egresosPorAño (últimos 6 años). Solo ADMIN.
+ * Opcional: ?tipo=ingreso|egreso, ?userId=... para filtrar por tipo y/o usuario.
  */
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {
@@ -56,6 +57,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const vista = typeof req.query.vista === 'string' ? req.query.vista.trim() : '';
     const mes = typeof req.query.mes === 'string' ? req.query.mes.trim() : '';
     const añoStr = typeof req.query.año === 'string' ? req.query.año.trim() : '';
+    const tipo = typeof req.query.tipo === 'string' ? req.query.tipo.trim() : '';
+    const userIdQuery = typeof req.query.userId === 'string' ? req.query.userId.trim() : '';
+    // Si no envían userId, filtrar por el usuario logueado (solo sus movimientos)
+    const userId = userIdQuery || currentUser.id;
+
+    const whereTipo = tipo === 'ingreso' || tipo === 'egreso' ? { tipo } : {};
+    const whereUserId = { userId };
 
     if (vista === 'año') {
       const currentYear = new Date().getUTCFullYear();
@@ -64,9 +72,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const start = new Date(Date.UTC(añoInicio, 0, 1, 0, 0, 0, 0));
       const end = new Date(Date.UTC(currentYear + 1, 0, 1, 0, 0, 0, 0));
       const movimientos = await db.movimiento.findMany({
-        where: { fecha: { gte: start, lt: end } },
+        where: { fecha: { gte: start, lt: end }, ...whereTipo, ...whereUserId },
         select: { fecha: true, monto: true, tipo: true },
       }) as { fecha: Date; monto: unknown; tipo: string }[];
+      if (process.env.NODE_ENV === 'development') {
+        // eslint-disable-next-line no-console
+        console.log('[reportes] vista=año | userId:', userId, '| movimientos count:', movimientos.length);
+      }
       const ingresosPorAño: number[] = Array.from({ length: CANTIDAD_AÑOS_VISTA_AÑO }, () => 0);
       const egresosPorAño: number[] = Array.from({ length: CANTIDAD_AÑOS_VISTA_AÑO }, () => 0);
       for (const mov of movimientos) {
@@ -95,9 +107,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const start = new Date(Date.UTC(y, m - 1, 1, 0, 0, 0, 0));
       const end = new Date(Date.UTC(y, m, 1, 0, 0, 0, 0));
       const movimientos = await db.movimiento.findMany({
-        where: { fecha: { gte: start, lt: end } },
+        where: { fecha: { gte: start, lt: end }, ...whereTipo, ...whereUserId },
         select: { fecha: true, monto: true, tipo: true },
       }) as { fecha: Date; monto: unknown; tipo: string }[];
+      if (process.env.NODE_ENV === 'development') {
+        // eslint-disable-next-line no-console
+        console.log('[reportes] mes=', mes, '| userId:', userId, '| movimientos count:', movimientos.length);
+      }
       const ingresosPorDia: number[] = Array.from({ length: 31 }, () => 0);
       const egresosPorDia: number[] = Array.from({ length: 31 }, () => 0);
       for (const mov of movimientos) {
@@ -121,9 +137,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const start = new Date(Date.UTC(año, 0, 1, 0, 0, 0, 0));
       const end = new Date(Date.UTC(año + 1, 0, 1, 0, 0, 0, 0));
       const movimientos = await db.movimiento.findMany({
-        where: { fecha: { gte: start, lt: end } },
+        where: { fecha: { gte: start, lt: end }, ...whereTipo, ...whereUserId },
         select: { fecha: true, monto: true, tipo: true },
       }) as { fecha: Date; monto: unknown; tipo: string }[];
+      if (process.env.NODE_ENV === 'development') {
+        // eslint-disable-next-line no-console
+        console.log('[reportes] año=', año, '| userId:', userId, '| movimientos count:', movimientos.length);
+      }
       const ingresosPorMes: number[] = Array.from({ length: 12 }, () => 0);
       const egresosPorMes: number[] = Array.from({ length: 12 }, () => 0);
       for (const mov of movimientos) {

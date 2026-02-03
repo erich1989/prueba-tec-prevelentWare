@@ -14,6 +14,7 @@ import {
 } from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import FilterListOffIcon from '@mui/icons-material/FilterListOff';
 import { ReportesChart } from '../../app/components/ReportesChart';
 import {
   labelCaptionSx,
@@ -70,6 +71,7 @@ export default function ReportesPage() {
     loadingSaldo,
     errorSaldo,
     handleDescargarCSV,
+    limpiarFiltros,
   } = useReportes();
 
   const hoyFormatted = new Date().toLocaleDateString('es-ES', {
@@ -157,7 +159,7 @@ export default function ReportesPage() {
                 <MenuItem value="egreso">Gasto</MenuItem>
               </Select>
             </FormControl>
-            <FormControl sx={formControlSelectSx} size="small">
+            <FormControl sx={formControlSelectSx} size="small" disabled>
               <Typography variant="caption" sx={labelCaptionSx}>
                 Usuario
               </Typography>
@@ -173,8 +175,8 @@ export default function ReportesPage() {
                 <MenuItem value="Usuario">Usuario</MenuItem>
               </Select>
             </FormControl>
-            <Button variant="outlined" color="primary" sx={filterButtonSx}>
-              Filtrar
+            <Button variant="outlined" color="primary" sx={filterButtonSx} aria-label="Quitar filtros" onClick={limpiarFiltros}>
+              <FilterListOffIcon />
             </Button>
             </Box>
             <Paper elevation={0} sx={todayPaperSx}>

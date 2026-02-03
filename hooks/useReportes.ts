@@ -79,7 +79,10 @@ export function useReportes() {
     let cancelled = false;
     setLoadingReporte(true);
     setErrorReporte(null);
-    fetch(`/api/reportes?mes=${encodeURIComponent(mesParaVistaDia)}`)
+    const paramsDia = new URLSearchParams({ mes: mesParaVistaDia });
+    if (tipoFiltro === 'ingreso' || tipoFiltro === 'egreso') paramsDia.set('tipo', tipoFiltro);
+    if (usuarioFiltro) paramsDia.set('userId', usuarioFiltro);
+    fetch(`/api/reportes?${paramsDia.toString()}`)
       .then((res) => {
         if (!res.ok) throw new Error('Error al cargar reporte');
         return res.json();
@@ -103,7 +106,7 @@ export function useReportes() {
     return () => {
       cancelled = true;
     };
-  }, [vistaGrafica, mesParaVistaDia]);
+  }, [vistaGrafica, mesParaVistaDia, tipoFiltro, usuarioFiltro]);
 
   // Vista por mes: cargar datos del año desde el backend (ingresos y egresos por mes, 12 valores)
   useEffect(() => {
@@ -115,7 +118,10 @@ export function useReportes() {
     let cancelled = false;
     setLoadingReporte(true);
     setErrorReporte(null);
-    fetch(`/api/reportes?año=${encodeURIComponent(String(añoParaVistaMes))}`)
+    const paramsMes = new URLSearchParams({ año: String(añoParaVistaMes) });
+    if (tipoFiltro === 'ingreso' || tipoFiltro === 'egreso') paramsMes.set('tipo', tipoFiltro);
+    if (usuarioFiltro) paramsMes.set('userId', usuarioFiltro);
+    fetch(`/api/reportes?${paramsMes.toString()}`)
       .then((res) => {
         if (!res.ok) throw new Error('Error al cargar reporte');
         return res.json();
@@ -139,7 +145,7 @@ export function useReportes() {
     return () => {
       cancelled = true;
     };
-  }, [vistaGrafica, añoParaVistaMes]);
+  }, [vistaGrafica, añoParaVistaMes, tipoFiltro, usuarioFiltro]);
 
   // Vista por año: cargar datos de los últimos años desde el backend (ingresos y egresos por año)
   useEffect(() => {
@@ -152,7 +158,10 @@ export function useReportes() {
     let cancelled = false;
     setLoadingReporte(true);
     setErrorReporte(null);
-    fetch('/api/reportes?vista=año')
+    const paramsAño = new URLSearchParams({ vista: 'año' });
+    if (tipoFiltro === 'ingreso' || tipoFiltro === 'egreso') paramsAño.set('tipo', tipoFiltro);
+    if (usuarioFiltro) paramsAño.set('userId', usuarioFiltro);
+    fetch(`/api/reportes?${paramsAño.toString()}`)
       .then((res) => {
         if (!res.ok) throw new Error('Error al cargar reporte');
         return res.json();
@@ -183,7 +192,7 @@ export function useReportes() {
     return () => {
       cancelled = true;
     };
-  }, [vistaGrafica]);
+  }, [vistaGrafica, tipoFiltro, usuarioFiltro]);
 
   const handleDescargarCSV = useCallback(() => {
     const params = new URLSearchParams();
@@ -221,6 +230,14 @@ export function useReportes() {
     [mesParaVistaDia]
   );
 
+  const limpiarFiltros = useCallback(() => {
+    setTipoFiltro('');
+    setUsuarioFiltro('');
+    setVistaGrafica('dia');
+    setMesParaVistaDia(getMesActualYYYYMM());
+    setAñoParaVistaMes(new Date().getFullYear());
+  }, []);
+
   return {
     tipoFiltro,
     setTipoFiltro,
@@ -246,5 +263,6 @@ export function useReportes() {
     loadingSaldo,
     errorSaldo,
     handleDescargarCSV,
+    limpiarFiltros,
   };
 }
