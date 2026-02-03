@@ -10,10 +10,11 @@ export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
   const pathname = router.pathname;
   const isLoginPage = pathname === '/login';
+  const isDocsPage = pathname === '/docs';
 
   return (
     <ThemeRegistry>
-      {isLoginPage ? (
+      {isLoginPage || isDocsPage ? (
         <Component {...pageProps} />
       ) : (
         <AuthGuard>

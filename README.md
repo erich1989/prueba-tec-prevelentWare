@@ -1,33 +1,48 @@
-# Frontend - App Contenido Drupal
+# Sistema de Gestión de Ingresos y Gastos
 
-Aplicación Next.js 16 LTS para la interfaz de usuario del sistema de importación de documentos Word a Drupal.
+Aplicación fullstack con Next.js para la gestión de ingresos y egresos, usuarios y reportes. Incluye autenticación con Better Auth (GitHub OAuth), control de acceso por roles (RBAC) y API REST documentada.
 
-## Stack Tecnológico
+## Stack tecnológico
 
-- **Next.js 16 LTS** - Framework React con App Router
-- **TypeScript** - Tipado estático
-- **Material-UI (MUI)** - Librería de componentes UI (Material Design)
-- **Tailwind CSS** - Utilidades CSS adicionales
+- **Next.js** (Pages Router) – Framework React
+- **TypeScript** – Tipado estático
+- **Material-UI (MUI)** – Componentes UI
+- **Tailwind CSS** – Utilidades CSS
+- **Prisma** – ORM (Postgres en Supabase)
+- **Better Auth** – Autenticación y sesiones (GitHub OAuth)
+
+## Requisitos previos
+
+- Node.js 18+
+- Cuenta en [Supabase](https://supabase.com) (Postgres)
+- Cuenta en [GitHub](https://github.com) (OAuth App para login)
 
 ## Desarrollo local
 
-### Instalar dependencias
+### 1. Clonar e instalar dependencias
 
 ```bash
+git clone <url-del-repositorio>
+cd prueba-tec-prevalentWare
 npm install
 ```
 
-### Ejecutar en desarrollo
+### 2. Variables de entorno
 
-```bash
-npm run dev
-```
+Crea un archivo `.env` en la raíz del proyecto con:
 
-La app estará disponible en: http://localhost:3000
+| Variable | Descripción |
+|----------|-------------|
+| `DATABASE_URL` | URI de Postgres (Supabase). Usar **Connection pooling** (puerto 6543). |
+| `DIRECT_URL` | URI directa a Postgres (Supabase), sin pooler. Para Prisma. |
+| `BETTER_AUTH_SECRET` | Secreto para firmar sesiones (mín. 32 caracteres). Ej.: `openssl rand -base64 32` |
+| `BETTER_AUTH_URL` | URL de la app. En local: `http://localhost:3000` |
+| `GITHUB_CLIENT_ID` | Client ID de la GitHub OAuth App |
+| `GITHUB_CLIENT_SECRET` | Client Secret de la GitHub OAuth App |
 
-### Prisma y base de datos (Supabase)
+### 3. Base de datos (Prisma + Supabase)
 
-El archivo `.env` debe tener `DATABASE_URL` y `DIRECT_URL` (URIs de Supabase). Para crear las tablas:
+Con `DATABASE_URL` y `DIRECT_URL` configurados en `.env`:
 
 ```bash
 npm run db:generate
@@ -36,108 +51,117 @@ npm run db:push
 
 Si `db:push` falla con **P1011 (TLS)**, copia la URI exacta desde Supabase (Project Settings → Database → Connection pooling para `DATABASE_URL`, direct URL para `DIRECT_URL`).
 
-### Better Auth y GitHub OAuth
+### 4. GitHub OAuth (Better Auth)
 
-1. En `.env` configura:
-   - `BETTER_AUTH_SECRET`: mínimo 32 caracteres (ej.: `openssl rand -base64 32`).
-   - `BETTER_AUTH_URL`: URL de la app (ej.: `http://localhost:3000`).
-   - `GITHUB_CLIENT_ID` y `GITHUB_CLIENT_SECRET`: crea una OAuth App en [GitHub Developer Settings](https://github.com/settings/developers). **Authorization callback URL**: `http://localhost:3000/api/auth/callback/github` (en producción usa tu dominio).
+1. En [GitHub → Developer settings → OAuth Apps](https://github.com/settings/developers), crea una OAuth App.
+2. **Authorization callback URL**: `http://localhost:3000/api/auth/callback/github`
+3. Copia el Client ID y el Client Secret a tu `.env`.
+
+### 5. Arrancar la aplicación
+
+```bash
+npm run dev
+```
+
+La app estará disponible en: **http://localhost:3000**
+
+- **Login**: inicia sesión con GitHub.
+- **Rutas**: Inicio (`/`), Movimientos (`/movimientos`), Usuarios (`/usuarios`, solo ADMIN), Reportes (`/reportes`, solo ADMIN).
 
 ## Estructura del proyecto
 
 ```
-Frontend/
-├── app/                    # App Router de Next.js
-├── components/              # Componentes organizados con Atomic Design
-│   ├── atoms/              # Componentes básicos (Button, Input, Label)
-│   ├── molecules/          # Combinaciones de átomos (FormField)
-│   ├── organisms/           # Componentes complejos
-│   └── templates/           # Layouts y estructuras
-├── public/                 # Archivos estáticos
-└── package.json            # Dependencias
+├── app/
+│   ├── components/          # Componentes reutilizables (diálogos, gráficos, navegación)
+│   ├── config/              # Configuración (nav, tests)
+│   └── theme/               # Tema MUI
+├── pages/
+│   ├── api/                 # API Routes (auth, movimientos, usuarios, reportes)
+│   ├── index.tsx            # Inicio
+│   ├── login/
+│   ├── movimientos/
+│   ├── usuarios/
+│   └── reportes/
+├── hooks/                   # Hooks (useMovimientos, useUsuarios, useReportes, useResumenMes)
+├── styles/                  # Estilos por página (*.styles.ts)
+├── lib/                     # Auth, Prisma, formatters, OpenAPI
+├── prisma/
+│   └── schema.prisma
+└── package.json
 ```
 
-## Arquitectura: Atomic Design + Material Design
+## Scripts disponibles
 
-Este proyecto utiliza **Atomic Design** como metodología para organizar los componentes y **Material-UI (MUI)** como librería de componentes UI basada en Material Design.
+| Comando | Descripción |
+|---------|-------------|
+| `npm run dev` | Servidor de desarrollo |
+| `npm run build` | Build de producción |
+| `npm run start` | Servidor de producción |
+| `npm run db:generate` | Genera cliente Prisma |
+| `npm run db:push` | Aplica schema a la base de datos |
+| `npm test` | Ejecuta tests (Jest) |
 
-Ver [app/components/README.md](./app/components/README.md) para más detalles sobre Atomic Design.
+## Documentación del API
 
-### Niveles
-- **Atoms**: Componentes básicos e indivisibles (pueden ser wrappers de MUI o componentes custom)
-- **Molecules**: Combinaciones simples de átomos
-- **Organisms**: Componentes complejos
-- **Templates**: Layouts y estructuras de página
+Con la app en marcha, la documentación OpenAPI está en:
 
-### Material Design
-
-El proyecto usa **Material-UI (MUI)** para los componentes UI. Los componentes de MUI pueden:
-- Usarse directamente en páginas
-- Wrappearse en Atoms para personalización
-- Combinarse en Molecules y Organisms
-
-**Documentación:**
-- [Material-UI](https://mui.com/)
-- [Material Design](https://m3.material.io/)
-
----
+- **http://localhost:3000/docs** (o la ruta configurada en el proyecto)
 
 ## Despliegue en Vercel
 
 ### 1. Repositorio en GitHub
 
-- Sube el código a un repositorio en GitHub (si el proyecto está en la raíz del repo, en Vercel deberás indicar **Root Directory**: `Frontend`).
+- Sube el código a un repositorio en GitHub.
+- El **Root Directory** en Vercel debe ser la raíz del repo (donde está `package.json`).
 
 ### 2. Crear proyecto en Vercel
 
-1. Entra en [vercel.com](https://vercel.com) e inicia sesión (con GitHub si quieres conectar el repo).
-2. **Add New** → **Project**.
-3. Importa el repositorio de GitHub.
-4. **Root Directory**: selecciona `Frontend` (carpeta donde está el `package.json` y `next.config.ts`).
-5. **Framework Preset**: Next.js (detectado automáticamente).
-6. **Build Command**: `npm run build` (por defecto; el script ya incluye `prisma generate`).
-7. **Output Directory**: dejar por defecto (Next.js).
-8. **Install Command**: `npm install`.
+1. Entra en [vercel.com](https://vercel.com) e inicia sesión (por ejemplo con GitHub).
+2. **Add New** → **Project** e importa el repositorio.
+3. **Framework Preset**: Next.js (detectado automáticamente).
+4. **Build Command**: `npm run build`
+5. **Install Command**: `npm install`
 
 ### 3. Variables de entorno en Vercel
 
 En **Settings** → **Environment Variables** del proyecto, añade:
 
-| Variable | Descripción | Ejemplo |
-|----------|-------------|---------|
-| `DATABASE_URL` | URI de Postgres (Supabase). Usar **Connection pooling** (puerto 6543) con `?pgbouncer=true&connection_limit=1` recomendado para serverless. | `postgresql://postgres.xxx:xxx@aws-0-xx.pooler.supabase.com:6543/postgres?pgbouncer=true&sslmode=require` |
-| `DIRECT_URL` | URI directa a Postgres (Supabase), sin pooler. Para migraciones y Prisma. | `postgresql://postgres.xxx:xxx@db.xxx.supabase.co:5432/postgres?sslmode=require` |
-| `BETTER_AUTH_URL` | URL pública de la app en producción. | `https://tu-proyecto.vercel.app` |
-| `BETTER_AUTH_SECRET` | Secreto para firmar sesiones (mín. 32 caracteres). | `openssl rand -base64 32` |
-| `GITHUB_CLIENT_ID` | Client ID de la GitHub OAuth App. | |
-| `GITHUB_CLIENT_SECRET` | Client Secret de la GitHub OAuth App. | |
-| `NEXT_PUBLIC_APP_URL` | (Opcional) Misma URL que `BETTER_AUTH_URL` si el cliente debe conocer la base URL. | `https://tu-proyecto.vercel.app` |
+| Variable | Descripción |
+|----------|-------------|
+| `DATABASE_URL` | URI de Postgres (Supabase). Usar Connection pooling (puerto 6543) con `?pgbouncer=true&connection_limit=1` para serverless. |
+| `DIRECT_URL` | URI directa a Postgres (Supabase). |
+| `BETTER_AUTH_URL` | URL pública de la app en producción (ej.: `https://tu-proyecto.vercel.app`). |
+| `BETTER_AUTH_SECRET` | Secreto para sesiones (mín. 32 caracteres). |
+| `GITHUB_CLIENT_ID` | Client ID de la GitHub OAuth App. |
+| `GITHUB_CLIENT_SECRET` | Client Secret de la GitHub OAuth App. |
 
-### 4. GitHub OAuth (Better Auth)
+### 4. Callback de GitHub OAuth en producción
 
-En [GitHub → Developer settings → OAuth Apps](https://github.com/settings/developers):
+En la OAuth App de GitHub, añade como **Authorization callback URL**:
 
-- Crea una aplicación (o edita la existente).
-- **Authorization callback URL** en producción:  
-  `https://tu-dominio.vercel.app/api/auth/callback/github`  
-  (reemplaza `tu-dominio.vercel.app` por la URL que te asigne Vercel, p. ej. `mi-app-xxx.vercel.app`).
+```
+https://tu-dominio.vercel.app/api/auth/callback/github
+```
 
-Puedes añadir tanto `http://localhost:3000/api/auth/callback/github` como la URL de Vercel en la misma OAuth App si usas la misma para desarrollo y producción.
+(Sustituye `tu-dominio.vercel.app` por la URL que asigne Vercel.)
 
-### 5. Desplegar
+Puedes tener en la misma OAuth App la URL de localhost y la de Vercel.
 
-- **Deploy** desde el dashboard de Vercel (o con cada push a la rama principal si dejaste los deploys automáticos).
-- Tras el primer deploy, comprueba que la URL de la app coincida con `BETTER_AUTH_URL` y con la callback de GitHub.
+### 5. Base de datos antes del primer deploy
 
-### 6. Base de datos y migraciones
+- Las tablas deben existir en Supabase antes del primer deploy.
+- Ejecuta `npm run db:push` en local con las mismas `DATABASE_URL` y `DIRECT_URL` que usarás en producción.
+- No ejecutes migraciones desde Vercel; hazlas desde tu máquina.
 
-- Las tablas deben existir en Supabase antes del primer deploy (ejecuta `npm run db:push` o `npm run db:migrate` desde local con `DATABASE_URL` y `DIRECT_URL` apuntando a la misma base que usarás en producción).
-- No ejecutes migraciones desde Vercel; hazlas desde tu máquina o desde un job/script que tenga acceso a la base.
+### 6. Desplegar
 
-### Resumen rápido
+- **Deploy** desde el dashboard de Vercel (o con cada push si tienes deploys automáticos).
+- Comprueba que `BETTER_AUTH_URL` coincida con la URL de la app y con la callback de GitHub.
 
-1. Repo en GitHub, Root Directory = `Frontend`.
-2. Variables de entorno: `DATABASE_URL`, `DIRECT_URL`, `BETTER_AUTH_URL`, `BETTER_AUTH_SECRET`, `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`.
-3. Callback de GitHub OAuth = `https://<tu-url-vercel>/api/auth/callback/github`.
-4. Deploy; si algo falla, revisar logs de build en Vercel y que las variables estén definidas para el entorno correcto (Production/Preview).
-# prueba-tec-prevelentWare
+## Resumen rápido (Vercel)
+
+1. Repo en GitHub, Root Directory = raíz del repo.
+2. Variables: `DATABASE_URL`, `DIRECT_URL`, `BETTER_AUTH_URL`, `BETTER_AUTH_SECRET`, `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`.
+3. Callback GitHub: `https://<tu-url-vercel>/api/auth/callback/github`.
+4. Base de datos creada en Supabase y `db:push` ejecutado en local.
+5. Deploy; si falla, revisar logs en Vercel y que las variables estén definidas para el entorno correcto (Production/Preview).
