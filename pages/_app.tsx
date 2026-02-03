@@ -1,8 +1,8 @@
 import type { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
-import '../app/globals.css';
+import '../styles/globals.css';
 import ThemeRegistry from '../app/theme/ThemeRegistry';
-import { Navigation } from '../app/components/organisms/Navigation';
+import { Navigation } from '../app/components/Navigation';
 import { AuthGuard } from '../app/components/AuthGuard';
 import { RoleGuard } from '../app/components/RoleGuard';
 

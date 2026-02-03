@@ -31,14 +31,15 @@ npm install
 
 Crea un archivo `.env` en la raíz del proyecto con:
 
-| Variable | Descripción |
-|----------|-------------|
-| `DATABASE_URL` | URI de Postgres (Supabase). Usar **Connection pooling** (puerto 6543). |
-| `DIRECT_URL` | URI directa a Postgres (Supabase), sin pooler. Para Prisma. |
-| `BETTER_AUTH_SECRET` | Secreto para firmar sesiones (mín. 32 caracteres). Ej.: `openssl rand -base64 32` |
-| `BETTER_AUTH_URL` | URL de la app. En local: `http://localhost:3000` |
-| `GITHUB_CLIENT_ID` | Client ID de la GitHub OAuth App |
-| `GITHUB_CLIENT_SECRET` | Client Secret de la GitHub OAuth App |
+
+| Variable               | Descripción                                                                      |
+| ------------------------ | ----------------------------------------------------------------------------------- |
+| `DATABASE_URL`         | URI de Postgres (Supabase). Usar**Connection pooling** (puerto 6543).             |
+| `DIRECT_URL`           | URI directa a Postgres (Supabase), sin pooler. Para Prisma.                       |
+| `BETTER_AUTH_SECRET`   | Secreto para firmar sesiones (mín. 32 caracteres). Ej.:`openssl rand -base64 32` |
+| `BETTER_AUTH_URL`      | URL de la app. En local:`http://localhost:3000`                                   |
+| `GITHUB_CLIENT_ID`     | Client ID de la GitHub OAuth App                                                  |
+| `GITHUB_CLIENT_SECRET` | Client Secret de la GitHub OAuth App                                              |
 
 ### 3. Base de datos (Prisma + Supabase)
 
@@ -83,8 +84,12 @@ La app estará disponible en: **http://localhost:3000**
 │   ├── usuarios/
 │   └── reportes/
 ├── hooks/                   # Hooks (useMovimientos, useUsuarios, useReportes, useResumenMes)
-├── styles/                  # Estilos por página (*.styles.ts)
+├── styles/                  # Estilos por página (*.styles.ts) y globals.css
 ├── lib/                     # Auth, Prisma, formatters, OpenAPI
+├── tests/                   # Tests unitarios (Jest), estructura espejo del código
+│   ├── config/
+│   ├── hooks/
+│   └── lib/
 ├── prisma/
 │   └── schema.prisma
 └── package.json
@@ -92,14 +97,15 @@ La app estará disponible en: **http://localhost:3000**
 
 ## Scripts disponibles
 
-| Comando | Descripción |
-|---------|-------------|
-| `npm run dev` | Servidor de desarrollo |
-| `npm run build` | Build de producción |
-| `npm run start` | Servidor de producción |
-| `npm run db:generate` | Genera cliente Prisma |
-| `npm run db:push` | Aplica schema a la base de datos |
-| `npm test` | Ejecuta tests (Jest) |
+
+| Comando               | Descripción                     |
+| ----------------------- | ---------------------------------- |
+| `npm run dev`         | Servidor de desarrollo           |
+| `npm run build`       | Build de producción             |
+| `npm run start`       | Servidor de producción          |
+| `npm run db:generate` | Genera cliente Prisma            |
+| `npm run db:push`     | Aplica schema a la base de datos |
+| `npm test`            | Ejecuta tests (Jest)             |
 
 ## Documentación del API
 
@@ -126,14 +132,15 @@ Con la app en marcha, la documentación OpenAPI está en:
 
 En **Settings** → **Environment Variables** del proyecto, añade:
 
-| Variable | Descripción |
-|----------|-------------|
-| `DATABASE_URL` | URI de Postgres (Supabase). Usar Connection pooling (puerto 6543) con `?pgbouncer=true&connection_limit=1` para serverless. |
-| `DIRECT_URL` | URI directa a Postgres (Supabase). |
-| `BETTER_AUTH_URL` | URL pública de la app en producción (ej.: `https://tu-proyecto.vercel.app`). |
-| `BETTER_AUTH_SECRET` | Secreto para sesiones (mín. 32 caracteres). |
-| `GITHUB_CLIENT_ID` | Client ID de la GitHub OAuth App. |
-| `GITHUB_CLIENT_SECRET` | Client Secret de la GitHub OAuth App. |
+
+| Variable               | Descripción                                                                                                               |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| `DATABASE_URL`         | URI de Postgres (Supabase). Usar Connection pooling (puerto 6543) con`?pgbouncer=true&connection_limit=1` para serverless. |
+| `DIRECT_URL`           | URI directa a Postgres (Supabase).                                                                                         |
+| `BETTER_AUTH_URL`      | URL pública de la app en producción (ej.:`https://tu-proyecto.vercel.app`).                                              |
+| `BETTER_AUTH_SECRET`   | Secreto para sesiones (mín. 32 caracteres).                                                                               |
+| `GITHUB_CLIENT_ID`     | Client ID de la GitHub OAuth App.                                                                                          |
+| `GITHUB_CLIENT_SECRET` | Client Secret de la GitHub OAuth App.                                                                                      |
 
 ### 4. Callback de GitHub OAuth en producción
 
@@ -155,8 +162,8 @@ Puedes tener en la misma OAuth App la URL de localhost y la de Vercel.
 
 ### 6. Desplegar
 
-- **Deploy** desde el dashboard de Vercel (o con cada push si tienes deploys automáticos).
-- Comprueba que `BETTER_AUTH_URL` coincida con la URL de la app y con la callback de GitHub.
+- [ ] **Deploy** desde el dashboard de Vercel (o con cada push si tienes deploys automáticos).
+- [ ] Comprueba que `BETTER_AUTH_URL` coincida con la URL de la app y con la callback de GitHub.
 
 ## Resumen rápido (Vercel)
 

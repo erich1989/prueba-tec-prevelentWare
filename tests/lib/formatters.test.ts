@@ -1,4 +1,4 @@
-import { formatPesos } from '../formatters';
+import { formatPesos } from '@/lib/formatters';
 
 describe('formatPesos', () => {
   it('formatea números positivos con separador de miles', () => {

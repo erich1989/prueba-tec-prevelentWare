@@ -3,7 +3,7 @@ import {
   ADMIN_ONLY_PATHS,
   USER_DEFAULT_PATH,
   NAV_MENU_ITEMS,
-} from '../nav';
+} from '@/app/config/nav';
 
 describe('nav config', () => {
   describe('ROLES', () => {
