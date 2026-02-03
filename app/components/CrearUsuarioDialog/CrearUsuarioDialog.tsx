@@ -217,7 +217,7 @@ export function CrearUsuarioDialog({ open, onClose, onSubmit, usuarioEditando, o
                 sx={inputSx}
                 SelectProps={{
                   displayEmpty: true,
-                  renderValue: (v: string) => v || 'Seleccione un rol',
+                  renderValue: (v: unknown) => (typeof v === 'string' ? v : '') || 'Seleccione un rol',
                 }}
               >
                 <MenuItem value="">Seleccione un rol</MenuItem>

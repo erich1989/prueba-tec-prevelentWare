@@ -50,8 +50,8 @@ import {
   deleteButtonSx,
   searchIconSx,
   getRoleChipStyles,
-} from './usuarios.styles';
-import { useUsuarios } from './useUsuarios';
+} from '@/styles/usuarios.styles';
+import { useUsuarios } from '@/hooks/useUsuarios';
 
 export default function UsuariosPage() {
   const {

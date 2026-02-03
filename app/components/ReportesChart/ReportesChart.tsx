@@ -109,7 +109,7 @@ export function ReportesChart({ vista = 'mes', mesParaVistaDia, añoParaVistaMes
     ...baseOptions,
     ...options,
     colors: isDosSeries ? COLORS_INGRESO_EGRESO : baseOptions.colors,
-    legend: isDosSeries ? { show: true, position: 'top', horizontalAlign: 'right' } : { show: false },
+    legend: isDosSeries ? { show: true, position: 'top' as const, horizontalAlign: 'right' as const } : { show: false },
     tooltip:
       isDosSeries
         ? { ...baseOptions.tooltip, y: [{ formatter: formatPesos }, { formatter: formatPesos }] }

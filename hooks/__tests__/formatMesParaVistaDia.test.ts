@@ -1,4 +1,4 @@
-import { formatMesParaVistaDia } from '../useReportes';
+import { formatMesParaVistaDia } from '@/hooks/useReportes';
 
 describe('formatMesParaVistaDia', () => {
   it('formatea YYYY-MM como "Mes Año"', () => {

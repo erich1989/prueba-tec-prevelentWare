@@ -59,8 +59,8 @@ import {
   conceptoIconIngresoSx,
   conceptoIconEgresoSx,
   conceptoCellContentSx,
-} from './movimientos.styles';
-import { useMovimientos, type TipoMovimiento } from './useMovimientos';
+} from '@/styles/movimientos.styles';
+import { useMovimientos, type TipoMovimiento } from '@/hooks/useMovimientos';
 
 function formatMonto(monto: number, tipo: TipoMovimiento): string {
   return `$ ${monto.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;

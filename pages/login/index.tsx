@@ -7,8 +7,8 @@ import {
   titleSx,
   subtitleSx,
   loginButtonSx,
-} from './login.styles';
-import { useLogin } from './useLogin';
+} from '@/styles/login.styles';
+import { useLogin } from '@/hooks/useLogin';
 
 /**
  * Página de login. Better Auth + GitHub OAuth; el botón inicia el flujo con signIn.social.

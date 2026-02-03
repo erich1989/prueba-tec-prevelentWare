@@ -42,8 +42,8 @@ import {
   todayLabelSx,
   todayValueSx,
   todayCalendarIconSx,
-} from './reportes.styles';
-import { useReportes } from './useReportes';
+} from '@/styles/reportes.styles';
+import { useReportes } from '@/hooks/useReportes';
 
 export default function ReportesPage() {
   const {
