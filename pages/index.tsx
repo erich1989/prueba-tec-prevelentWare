@@ -225,7 +225,7 @@ export default function Home() {
                   </Typography>
                   <Typography
                     variant="caption"
-                    sx={variacionIngresos != null && variacionIngresos >= 0 ? resumenStatTrendSx : resumenStatTrendNegativeSx}
+                    sx={(variacionIngresos == null || variacionIngresos >= 0) ? resumenStatTrendSx : resumenStatTrendNegativeSx}
                   >
                     <TrendingUpIcon sx={trendIconSx} />
                     {variacionIngresos != null
@@ -240,10 +240,7 @@ export default function Home() {
                   <Typography variant="h6" sx={resumenStatValueSx}>
                     ${data.gastos.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </Typography>
-                  <Typography
-                    variant="caption"
-                    sx={variacionGastos != null && variacionGastos <= 0 ? resumenStatTrendSx : resumenStatTrendNegativeSx}
-                  >
+                  <Typography variant="caption" sx={resumenStatTrendNegativeSx}>
                     <TrendingDownIcon sx={trendIconSx} />
                     {variacionGastos != null
                       ? `${variacionGastos >= 0 ? '+' : ''}${variacionGastos}% vs mes anterior`
