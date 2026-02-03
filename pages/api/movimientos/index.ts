@@ -41,7 +41,54 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const currentUser = sessionResult.user as { id: string; name?: string | null; email?: string; role?: string };
 
     if (req.method === 'GET') {
+      const conceptoRaw = req.query.concepto;
+      const tipoRaw = req.query.tipo;
+      const fechaDesdeRaw = req.query.fechaDesde;
+      const fechaHastaRaw = req.query.fechaHasta;
+      const conceptoQ = typeof conceptoRaw === 'string' ? conceptoRaw.trim() : Array.isArray(conceptoRaw) ? String(conceptoRaw[0] ?? '').trim() : '';
+      const tipoQ = typeof tipoRaw === 'string' ? tipoRaw.trim().toLowerCase() : Array.isArray(tipoRaw) ? String(tipoRaw[0] ?? '').trim().toLowerCase() : '';
+      const tipoValido = tipoQ === 'ingreso' || tipoQ === 'egreso' ? tipoQ : null;
+      const fechaDesdeStr = typeof fechaDesdeRaw === 'string' ? fechaDesdeRaw.trim() : Array.isArray(fechaDesdeRaw) ? String(fechaDesdeRaw[0] ?? '').trim() : '';
+      const fechaHastaStr = typeof fechaHastaRaw === 'string' ? fechaHastaRaw.trim() : Array.isArray(fechaHastaRaw) ? String(fechaHastaRaw[0] ?? '').trim() : '';
+
+      /** Inicio del día en UTC (00:00:00.000) para filtrar fecha >= desde. */
+      const startOfDayUTC = (s: string): Date | null => {
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return null;
+        const [y, m, d] = s.split('-').map(Number);
+        const date = new Date(Date.UTC(y, m - 1, d, 0, 0, 0, 0));
+        return Number.isNaN(date.getTime()) ? null : date;
+      };
+      /** Inicio del día siguiente en UTC para filtrar fecha < hasta (exclusivo). */
+      const startOfNextDayUTC = (s: string): Date | null => {
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return null;
+        const [y, m, d] = s.split('-').map(Number);
+        const date = new Date(Date.UTC(y, m - 1, d + 1, 0, 0, 0, 0));
+        return Number.isNaN(date.getTime()) ? null : date;
+      };
+      const fechaDesde = startOfDayUTC(fechaDesdeStr);
+      const fechaHastaExclusive = fechaHastaStr ? startOfNextDayUTC(fechaHastaStr) : null;
+
+      type WhereMovimiento = {
+        concepto?: { contains: string; mode: 'insensitive' };
+        tipo?: string;
+        fecha?: { gte?: Date; lt?: Date };
+      };
+      const where: WhereMovimiento = {};
+      if (conceptoQ.length > 0) {
+        where.concepto = { contains: conceptoQ, mode: 'insensitive' };
+      }
+      if (tipoValido) {
+        where.tipo = tipoValido;
+      }
+      if (fechaDesde || fechaHastaExclusive) {
+        where.fecha = {};
+        if (fechaDesde) where.fecha.gte = fechaDesde;
+        if (fechaHastaExclusive) where.fecha.lt = fechaHastaExclusive;
+      }
+      const hasWhere = Object.keys(where).length > 0;
+
       const movimientos = await db.movimiento.findMany({
+        ...(hasWhere ? { where } : {}),
         orderBy: { fecha: 'desc' },
         include: {
           user: {

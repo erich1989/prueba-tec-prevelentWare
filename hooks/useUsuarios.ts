@@ -39,6 +39,8 @@ export function useUsuarios() {
   const [rolFiltro, setRolFiltro] = useState<string>('');
   const [estadoFiltro, setEstadoFiltro] = useState<string>('');
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -243,6 +245,26 @@ export function useUsuarios() {
   /** Lista ya filtrada por backend (q, rol, estado); sin filtro adicional en cliente. */
   const usuariosFiltrados = useMemo(() => usuarios, [usuarios]);
 
+  const usuariosTotal = usuariosFiltrados.length;
+  const pageClamped = Math.min(page, Math.max(0, Math.ceil(usuariosTotal / rowsPerPage) - 1));
+  const usuariosPaginados = useMemo(() => {
+    const start = pageClamped * rowsPerPage;
+    return usuariosFiltrados.slice(start, start + rowsPerPage);
+  }, [usuariosFiltrados, pageClamped, rowsPerPage]);
+
+  useEffect(() => {
+    if (page !== pageClamped) setPage(pageClamped);
+  }, [pageClamped]);
+
+  const onPageChange = useCallback((_event: unknown, newPage: number) => {
+    setPage(newPage);
+  }, []);
+
+  const onRowsPerPageChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  }, []);
+
   /** Mensaje para la fila vacía (sin usuarios): prefix + highlight en negrilla + suffix. */
   const emptyStateMessage = useMemo((): { prefix: string; highlight: string | null; suffix: string } | null => {
     if (usuariosFiltrados.length > 0) return null;
@@ -275,7 +297,12 @@ export function useUsuarios() {
   }, [usuariosFiltrados.length, nombreCorreo, rolFiltro, estadoFiltro]);
 
   return {
-    usuarios: usuariosFiltrados,
+    usuarios: usuariosPaginados,
+    usuariosTotal,
+    page: pageClamped,
+    rowsPerPage,
+    onPageChange,
+    onRowsPerPageChange,
     loading,
     error,
     nombreCorreo,

@@ -13,8 +13,10 @@ import {
   Table,
   TableHead,
   TableBody,
+  TableFooter,
   TableRow,
   TableCell,
+  TablePagination,
   Paper,
   CircularProgress,
 } from '@mui/material';
@@ -22,6 +24,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import FilterListOffIcon from '@mui/icons-material/FilterListOff';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 import { NuevoMovimientoDialog } from '../../app/components/NuevoMovimientoDialog';
@@ -32,11 +35,14 @@ import {
   nuevoButtonSx,
   filterCardSx,
   filterCardContentSx,
+  filterContentWrapperSx,
   filterRowSx,
   labelCaptionSx,
   formControlConceptoSx,
+  formControlDateSx,
   formControlSelectSx,
   searchInputSx,
+  dateInputSx,
   selectSx,
   filterButtonSx,
   tableCardSx,
@@ -45,15 +51,16 @@ import {
   tableHeadRowSx,
   tableHeadCellSx,
   tableBodyRowSx,
+  tableFooterRowSx,
   tableCellSx,
   tableCellSecondarySx,
   tableCellMontoSx,
-  totalWrapperSx,
-  totalCardSx,
-  totalCardContentSx,
   totalLabelSx,
   totalValueSx,
+  totalCardInlineSx,
+  totalCardContentInlineSx,
   searchIconSx,
+  emptyCellTextBoldSx,
   editButtonSx,
   deleteButtonSx,
   conceptoIconIngresoSx,
@@ -69,6 +76,11 @@ function formatMonto(monto: number, tipo: TipoMovimiento): string {
 export default function MovimientosPage() {
   const {
     movimientos,
+    movimientosTotal,
+    page,
+    rowsPerPage,
+    onPageChange,
+    onRowsPerPageChange,
     loading,
     error,
     total,
@@ -76,8 +88,10 @@ export default function MovimientosPage() {
     setConcepto,
     tipoFiltro,
     setTipoFiltro,
-    usuarioFiltro,
-    setUsuarioFiltro,
+    fechaDesde,
+    setFechaDesde,
+    fechaHasta,
+    setFechaHasta,
     dialogNuevoOpen,
     movimientoEditando,
     eliminandoId,
@@ -89,6 +103,8 @@ export default function MovimientosPage() {
     openDialogNuevo,
     openModalEditar,
     closeDialog,
+    limpiarFiltros,
+    emptyStateMessage,
   } = useMovimientos();
 
   return (
@@ -120,7 +136,8 @@ export default function MovimientosPage() {
 
       <Card elevation={0} sx={filterCardSx}>
         <CardContent sx={filterCardContentSx}>
-          <Box sx={filterRowSx}>
+          <Box sx={filterContentWrapperSx}>
+            <Box sx={filterRowSx}>
             <FormControl sx={formControlConceptoSx} size="small">
               <Typography variant="caption" sx={labelCaptionSx}>
                 Concepto
@@ -149,31 +166,55 @@ export default function MovimientosPage() {
                 onChange={(e) => setTipoFiltro(e.target.value)}
                 displayEmpty
                 sx={selectSx}
-                renderValue={(v) => v || 'Seleccionar tipo'}
+                renderValue={(v) => (v === 'ingreso' ? 'Ingreso' : v === 'egreso' ? 'Gasto' : '') || 'Seleccionar tipo'}
               >
                 <MenuItem value="">Seleccionar tipo</MenuItem>
                 <MenuItem value="ingreso">Ingreso</MenuItem>
                 <MenuItem value="egreso">Gasto</MenuItem>
               </Select>
             </FormControl>
-            <FormControl sx={formControlSelectSx} size="small">
+            <FormControl size="small" sx={formControlDateSx}>
               <Typography variant="caption" sx={labelCaptionSx}>
-                Usuario
+                Desde
               </Typography>
-              <Select
-                value={usuarioFiltro}
-                onChange={(e) => setUsuarioFiltro(e.target.value)}
-                displayEmpty
-                sx={selectSx}
-                renderValue={(v) => v || 'Todos los usuarios'}
-              >
-                <MenuItem value="">Todos los usuarios</MenuItem>
-                <MenuItem value="Admin">Admin</MenuItem>
-              </Select>
+              <TextField
+                size="small"
+                type="date"
+                value={fechaDesde}
+                onChange={(e) => setFechaDesde(e.target.value)}
+                sx={dateInputSx}
+                inputProps={{ 'aria-label': 'Fecha desde' }}
+                InputLabelProps={{ shrink: true }}
+              />
             </FormControl>
-            <Button variant="outlined" color="primary" sx={filterButtonSx}>
-              Filtrar
+            <FormControl size="small" sx={formControlDateSx}>
+              <Typography variant="caption" sx={labelCaptionSx}>
+                Hasta
+              </Typography>
+              <TextField
+                size="small"
+                type="date"
+                value={fechaHasta}
+                onChange={(e) => setFechaHasta(e.target.value)}
+                sx={dateInputSx}
+                inputProps={{ 'aria-label': 'Fecha hasta' }}
+                InputLabelProps={{ shrink: true }}
+              />
+            </FormControl>
+            <Button variant="outlined" color="primary" sx={filterButtonSx} aria-label="Quitar filtros" onClick={limpiarFiltros}>
+              <FilterListOffIcon />
             </Button>
+          </Box>
+            <Card elevation={0} sx={totalCardInlineSx}>
+              <CardContent sx={totalCardContentInlineSx}>
+                <Typography variant="caption" sx={totalLabelSx}>
+                  Total
+                </Typography>
+                <Typography sx={totalValueSx}>
+                  $ {total.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </Typography>
+              </CardContent>
+            </Card>
           </Box>
         </CardContent>
       </Card>
@@ -203,10 +244,16 @@ export default function MovimientosPage() {
                     {error}
                   </TableCell>
                 </TableRow>
-              ) : movimientos.length === 0 ? (
+              ) : emptyStateMessage ? (
                 <TableRow>
                   <TableCell colSpan={5} sx={{ ...tableCellSecondarySx, py: 4 }}>
-                    No hay movimientos registrados
+                    {emptyStateMessage.prefix}
+                    {emptyStateMessage.highlight != null && (
+                      <Box component="span" sx={emptyCellTextBoldSx}>
+                        {emptyStateMessage.highlight}
+                      </Box>
+                    )}
+                    {emptyStateMessage.suffix}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -278,22 +325,24 @@ export default function MovimientosPage() {
                 ))
               )}
             </TableBody>
+            <TableFooter>
+              <TableRow sx={tableFooterRowSx}>
+                <TablePagination
+                  count={movimientosTotal}
+                  page={page}
+                  onPageChange={onPageChange}
+                  rowsPerPage={rowsPerPage}
+                  onRowsPerPageChange={onRowsPerPageChange}
+                  rowsPerPageOptions={[5, 10, 25]}
+                  labelRowsPerPage="Filas por página:"
+                  labelDisplayedRows={({ from, to, count }) => `${from}–${to} de ${count}`}
+                  colSpan={5}
+                />
+              </TableRow>
+            </TableFooter>
           </Table>
         </TableContainer>
       </Card>
-
-      <Box sx={totalWrapperSx}>
-        <Card elevation={0} sx={totalCardSx}>
-          <CardContent sx={totalCardContentSx}>
-            <Typography variant="caption" sx={totalLabelSx}>
-              Total
-            </Typography>
-            <Typography sx={totalValueSx}>
-              $ {total.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </Typography>
-          </CardContent>
-        </Card>
-      </Box>
     </Box>
   );
 }

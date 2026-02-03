@@ -123,6 +123,12 @@ export const tableBodyRowSx: SxProps<Theme> = {
   '&:last-child td': { borderBottom: 0 },
 };
 
+/** Fila del footer (paginación): borde superior para separar del cuerpo. */
+export const tableFooterRowSx: SxProps<Theme> = {
+  borderTop: '1px solid',
+  borderColor: 'grey.200',
+};
+
 export const tableCellSx: SxProps<Theme> = {
   px: 4,
   py: 2.5,

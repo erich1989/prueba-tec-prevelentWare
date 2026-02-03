@@ -13,8 +13,10 @@ import {
   Table,
   TableHead,
   TableBody,
+  TableFooter,
   TableRow,
   TableCell,
+  TablePagination,
   Paper,
   Chip,
   CircularProgress,
@@ -45,6 +47,7 @@ import {
   tableHeadRowSx,
   tableHeadCellSx,
   tableBodyRowSx,
+  tableFooterRowSx,
   tableCellSx,
   tableCellSecondarySx,
   emptyCellTextBoldSx,
@@ -59,6 +62,11 @@ import { useUsuarios } from '@/hooks/useUsuarios';
 export default function UsuariosPage() {
   const {
     usuarios,
+    usuariosTotal,
+    page,
+    rowsPerPage,
+    onPageChange,
+    onRowsPerPageChange,
     loading,
     error,
     nombreCorreo,
@@ -278,6 +286,21 @@ export default function UsuariosPage() {
                 ))
               )}
             </TableBody>
+            <TableFooter>
+              <TableRow sx={tableFooterRowSx}>
+                <TablePagination
+                  count={usuariosTotal}
+                  page={page}
+                  onPageChange={onPageChange}
+                  rowsPerPage={rowsPerPage}
+                  onRowsPerPageChange={onRowsPerPageChange}
+                  rowsPerPageOptions={[5, 10, 25]}
+                  labelRowsPerPage="Filas por página:"
+                  labelDisplayedRows={({ from, to, count }) => `${from}–${to} de ${count}`}
+                  colSpan={6}
+                />
+              </TableRow>
+            </TableFooter>
           </Table>
         </TableContainer>
       </Card>

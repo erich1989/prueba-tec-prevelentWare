@@ -44,6 +44,15 @@ export const filterCardSx: SxProps<Theme> = {
 
 export const filterCardContentSx: SxProps<Theme> = { p: 3 };
 
+/** Contenedor: fila de filtros a la izquierda, tarjeta total a la derecha. No aumenta el alto. */
+export const filterContentWrapperSx: SxProps<Theme> = {
+  display: 'flex',
+  flexWrap: 'wrap',
+  alignItems: 'flex-start',
+  justifyContent: 'space-between',
+  gap: 2,
+};
+
 export const filterRowSx: SxProps<Theme> = {
   display: 'flex',
   flexWrap: 'wrap',
@@ -63,7 +72,18 @@ export const labelCaptionSx: SxProps<Theme> = {
 
 export const formControlConceptoSx: SxProps<Theme> = { flex: 0.5, minWidth: 250 };
 
+export const formControlDateSx: SxProps<Theme> = { minWidth: 160 };
+
 export const formControlSelectSx: SxProps<Theme> = { width: 192 };
+
+export const dateInputSx: SxProps<Theme> = {
+  '& .MuiOutlinedInput-root': {
+    borderRadius: '8px',
+    bgcolor: 'grey.50',
+    fontSize: '0.875rem',
+    '& fieldset': { borderColor: 'grey.200' },
+  },
+};
 
 export const searchInputSx: SxProps<Theme> = {
   '& .MuiOutlinedInput-root': {
@@ -123,6 +143,12 @@ export const tableBodyRowSx: SxProps<Theme> = {
   '&:last-child td': { borderBottom: 0 },
 };
 
+/** Fila del footer (paginación): borde superior para separar del cuerpo. */
+export const tableFooterRowSx: SxProps<Theme> = {
+  borderTop: '1px solid',
+  borderColor: 'grey.200',
+};
+
 export const tableCellSx: SxProps<Theme> = {
   px: 4,
   py: 2.5,
@@ -167,6 +193,11 @@ export const tableCellSecondarySx: SxProps<Theme> = {
   color: 'grey.500',
 };
 
+/** Texto en negrilla para el mensaje de “sin resultados” (ej. concepto de búsqueda). */
+export const emptyCellTextBoldSx: SxProps<Theme> = {
+  fontWeight: 'bold',
+};
+
 export const tableCellMontoSx: SxProps<Theme> = {
   px: 4,
   py: 2.5,
@@ -207,28 +238,31 @@ export const deleteButtonSx: SxProps<Theme> = {
   },
 };
 
-export const totalWrapperSx: SxProps<Theme> = {
-  display: 'flex',
-  justifyContent: 'flex-end',
-};
-
-export const totalCardSx: SxProps<Theme> = {
+/** Tarjeta de total dentro de la sección de filtros (a la derecha). No afecta el alto. */
+export const totalCardInlineSx: SxProps<Theme> = {
   borderRadius: '12px',
   boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
   border: '1px solid',
   borderColor: 'grey.200',
   minWidth: 200,
-  textAlign: 'right',
+  flexShrink: 0,
+  alignSelf: 'flex-start',
 };
 
-export const totalCardContentSx: SxProps<Theme> = { p: 3 };
+export const totalCardContentInlineSx: SxProps<Theme> = {
+  p: 2,
+  py: 1.5,
+  '&:last-child': { pb: 1.5 },
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  gap: 2,
+};
 
 export const totalLabelSx: SxProps<Theme> = {
   fontSize: '0.75rem',
   fontWeight: 700,
   color: 'grey.500',
-  display: 'block',
-  mb: 1,
   textTransform: 'uppercase',
   letterSpacing: '0.1em',
 };
