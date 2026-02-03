@@ -1,3 +1,5 @@
+'use client';
+
 import {
   Box,
   Typography,
@@ -6,6 +8,7 @@ import {
   Button,
   Paper,
   Grid,
+  CircularProgress,
 } from '@mui/material';
 import Link from 'next/link';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
@@ -59,6 +62,7 @@ import {
   arrowIconSx,
   trendIconSx,
 } from '@/styles/index.styles';
+import { useResumenMes, getMesActualYYYYMM } from '@/hooks/useResumenMes';
 
 function formatDate() {
   const d = new Date();
@@ -72,6 +76,8 @@ function formatDate() {
 
 export default function Home() {
   const todayFormatted = formatDate();
+  const mesActual = getMesActualYYYYMM();
+  const { data, loading, error, variacionIngresos, variacionGastos } = useResumenMes(mesActual);
 
   const featureCards = [
     {
@@ -187,35 +193,65 @@ export default function Home() {
               Echa un vistazo rápido al rendimiento financiero de este periodo
               comparado con el anterior.
             </Typography>
-            <Button variant="contained" sx={resumenButtonSx}>
+            <Button
+              variant="contained"
+              component={Link}
+              href={`/reportes?mes=${mesActual}`}
+              sx={resumenButtonSx}
+            >
               Ver Detalle Mensual
             </Button>
           </Box>
           <Box sx={resumenStatsRowSx}>
-            <Box sx={resumenStatBoxSx}>
-              <Typography variant="caption" sx={resumenStatLabelSx}>
-                Ingresos
+            {loading ? (
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 2 }}>
+                <CircularProgress size={24} sx={{ color: 'white' }} />
+                <Typography variant="body2" sx={{ color: '#d1fae5' }}>
+                  Cargando resumen...
+                </Typography>
+              </Box>
+            ) : error ? (
+              <Typography variant="body2" sx={{ color: '#fca5a5', maxWidth: 320 }}>
+                {error}
               </Typography>
-              <Typography variant="h6" sx={resumenStatValueSx}>
-                $12.450,00
-              </Typography>
-              <Typography variant="caption" sx={resumenStatTrendSx}>
-                <TrendingUpIcon sx={trendIconSx} />
-                +14% vs mes anterior
-              </Typography>
-            </Box>
-            <Box sx={resumenStatBoxSx}>
-              <Typography variant="caption" sx={resumenStatLabelSx}>
-                Gastos
-              </Typography>
-              <Typography variant="h6" sx={resumenStatValueSx}>
-                $8.210,00
-              </Typography>
-              <Typography variant="caption" sx={resumenStatTrendNegativeSx}>
-                <TrendingDownIcon sx={trendIconSx} />
-                -5% vs mes anterior
-              </Typography>
-            </Box>
+            ) : data ? (
+              <>
+                <Box sx={resumenStatBoxSx}>
+                  <Typography variant="caption" sx={resumenStatLabelSx}>
+                    Ingresos
+                  </Typography>
+                  <Typography variant="h6" sx={resumenStatValueSx}>
+                    ${data.ingresos.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    sx={variacionIngresos != null && variacionIngresos >= 0 ? resumenStatTrendSx : resumenStatTrendNegativeSx}
+                  >
+                    <TrendingUpIcon sx={trendIconSx} />
+                    {variacionIngresos != null
+                      ? `${variacionIngresos >= 0 ? '+' : ''}${variacionIngresos}% vs mes anterior`
+                      : '—% vs mes anterior'}
+                  </Typography>
+                </Box>
+                <Box sx={resumenStatBoxSx}>
+                  <Typography variant="caption" sx={resumenStatLabelSx}>
+                    Gastos
+                  </Typography>
+                  <Typography variant="h6" sx={resumenStatValueSx}>
+                    ${data.gastos.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    sx={variacionGastos != null && variacionGastos <= 0 ? resumenStatTrendSx : resumenStatTrendNegativeSx}
+                  >
+                    <TrendingDownIcon sx={trendIconSx} />
+                    {variacionGastos != null
+                      ? `${variacionGastos >= 0 ? '+' : ''}${variacionGastos}% vs mes anterior`
+                      : '—% vs mes anterior'}
+                  </Typography>
+                </Box>
+              </>
+            ) : null}
           </Box>
         </Box>
       </Paper>

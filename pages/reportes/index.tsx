@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
 import {
   Box,
   Typography,
@@ -47,6 +49,7 @@ import {
 import { useReportes } from '@/hooks/useReportes';
 
 export default function ReportesPage() {
+  const router = useRouter();
   const {
     tipoFiltro,
     setTipoFiltro,
@@ -69,6 +72,15 @@ export default function ReportesPage() {
     handleDescargarCSV,
     limpiarFiltros,
   } = useReportes();
+
+  // Sincronizar mes con query ?mes=YYYY-MM (ej. desde Inicio > Ver Detalle Mensual)
+  useEffect(() => {
+    const mes = typeof router.query.mes === 'string' ? router.query.mes.trim() : '';
+    if (mes && /^\d{4}-\d{2}$/.test(mes)) {
+      setMesParaVistaDia(mes);
+      setVistaGrafica('dia');
+    }
+  }, [router.query.mes, setMesParaVistaDia, setVistaGrafica]);
 
   const hoyFormatted = new Date().toLocaleDateString('es-ES', {
     weekday: 'long',
