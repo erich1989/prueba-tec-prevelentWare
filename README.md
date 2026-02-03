@@ -107,11 +107,19 @@ La app estará disponible en: **http://localhost:3000**
 | `npm run db:push`     | Aplica schema a la base de datos |
 | `npm test`            | Ejecuta tests (Jest)             |
 
-## Documentación del API
+## Documentación del API (Swagger / OpenAPI)
 
-Con la app en marcha, la documentación OpenAPI está en:
+La API REST está documentada con **OpenAPI** y se visualiza con **Swagger UI**. Cada endpoint está documentado con parámetros, respuestas y ejemplos.
 
-- **http://localhost:3000/docs** (o la ruta configurada en el proyecto)
+**Cómo acceder:**
+
+- Con la app en marcha (`npm run dev`), abre en el navegador:
+  - **http://localhost:3000/docs** — interfaz Swagger UI (página a pantalla completa, sin layout de la app).
+  - **http://localhost:3000/api/docs** — redirige a `/docs` (misma documentación).
+
+En producción, sustituye `localhost:3000` por la URL de tu despliegue (ej. `https://tu-proyecto.vercel.app`).
+
+La especificación OpenAPI se sirve en **GET /api/openapi** (JSON) para integrar con otras herramientas (Postman, generación de clientes, etc.).
 
 ## Despliegue en Vercel
 
