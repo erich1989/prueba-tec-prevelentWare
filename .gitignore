@@ -18,6 +18,7 @@
 # misc
 .DS_Store
 *.pem
+PRUEBA_TECNICA.md
 
 # debug
 npm-debug.log*

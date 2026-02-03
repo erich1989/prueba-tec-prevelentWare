@@ -58,7 +58,7 @@ import {
   calendarIconSx,
   arrowIconSx,
   trendIconSx,
-} from './index.styles';
+} from '@/styles/index.styles';
 
 function formatDate() {
   const d = new Date();
